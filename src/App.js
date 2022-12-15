@@ -1,5 +1,6 @@
 import React from "react";
 // import { Typography, AppBar } from "@material-ui/core";
+import { AppBar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import VideoPlayer from "./components/VideoPlayer";
 import Options from "./components/Options";
