@@ -11,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Assignment, Phone, PhoneDisabled } from "@material-ui/icons";
 import { SocketContext } from "../SocketContext";
+import { useSpeechSynthesis } from "react-speech-kit";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -42,52 +43,46 @@ const useStyles = makeStyles((theme) => ({
 		border: "2px solid black",
 	},
 }));
+let orgName = [
+	"",
+	"Nurse 2 Nurse Staffing",
+	"TLC Travel Staff" ,
+	"Mynela Staffing",
+	"LightHouse Nursing Inc",
+	"RadLink Staffing"
+];
 
 const Options = ({ children }) => {
-	const { me, callAccepted, name, setName, leaveCall, callUser, callEnded } =
+	const {callAccepted, leaveCall, callUser, callEnded } =
 		useContext(SocketContext);
 	const [idToCall, setIdToCall] = useState("");
 	const classes = useStyles();
+	const { speak, voices ,cancel } = useSpeechSynthesis();
 	return (
 		<Container className={classes.container}>
 			<Paper elevation={10} className={classes.paper}>
 				<form className={classes.root} noValidate autoComplete="off">
 					<Grid container className={classes.gridContainer}>
-						<Grid item xs={12} md={6} className={classes.padding}>
-							<Typography gutterBottom variant="h6">
-								Account Info
-							</Typography>
-							<TextField
-								label="Name"
-								value={name}
-								onChange={(e) => {
-									setName(e.target.value);
-								}}
-								fullWidth
-							/>
-							<CopyToClipboard
-								text={me}
-								className={classes.margin}
-							>
-								<Button
-									variant="contained"
-									color="primary"
-									fullWidth
-									startIcon={<Assignment fontSize="large" />}
-								>
-									Copy Your ID
-								</Button>
-							</CopyToClipboard>
-						</Grid>
-						<Grid item xs={12} md={6} className={classes.padding}>
+						<Grid item xs={12} md={12} className={classes.padding}>
 							<Typography gutterBottom variant="h6">
 								Make a call
 							</Typography>
 							<TextField
 								label="ID to Call"
-								value={idToCall}
+								
 								onChange={(e) => {
-									setIdToCall(e.target.value);
+									console.log()
+									if(e.target.value < 1 || e.target.value > 5){
+										e.target.value = "";
+										cancel()
+										speak({ text: "    You have Selected Wrong Option Please Select right Option"})
+									}
+									else{
+										cancel()
+										speak({ text: "    Welcome to "+orgName[e.target.value]+". Your call will be connected to one of our recruiter as soon as possible"})
+										callUser(e.target.value)
+									}
+									
 								}}
 								fullWidth
 							/>
@@ -110,9 +105,10 @@ const Options = ({ children }) => {
 									color="primary"
 									fullWidth
 									startIcon={<Phone fontSize="large" />}
-									onClick={() => {
-										callUser(idToCall);
-									}}
+									// onClick={() => {
+									// 	callUser(idToCall);
+									// }}
+									onClick={() => speak({ text: "    Welcome to StaffGenix. Thank you for your call.  Please choose from the following options: press 1 For Nurse 2 Nurse Staffing.   press 2 For TLC Travel Staff. Press 3 For Mynela Staffing. Press 4 For LightHouse Nursing. Press 5 For RadLink Staffing.  ",voice: voices[2]})}
 									className={classes.margin}
 								>
 									Call

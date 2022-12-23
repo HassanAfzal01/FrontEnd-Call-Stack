@@ -1,11 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect} from "react";
 import { Button } from "@material-ui/core";
 
 import { SocketContext } from "../SocketContext";
 
 const Notifications = () => {
-	const { answerCall, call, callAccepted } = useContext(SocketContext);
-
+	const { answerCall, call, callAccepted} = useContext(SocketContext);
 	return (
 		<>
 			{call.isReceivingCall && !callAccepted && (

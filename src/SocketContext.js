@@ -5,7 +5,8 @@ import Peer from "simple-peer";
 
 const SocketContext = createContext();
 
-const socket = io("https://backend.eatcoast.ca",{ transports : ['websocket'] });
+// const socket = io("https://backend.eatcoast.ca",{ transports : ['websocket'] });
+const socket = io("localhost:7777",{ transports : ['websocket'] });
 
 const ContextProvider = ({ children }) => {
 	const [callAccepted, setCallAccepted] = useState(false);
@@ -54,7 +55,13 @@ const ContextProvider = ({ children }) => {
 		socket.on("me", (id) => setMe(id));
 
 		socket.on("callUser", ({ from, name: callerName, signal }) => {
+			console.log({ from, name: callerName, signal })
 			setCall({ isReceivingCall: true, from, name: callerName, signal });
+		});
+		socket.on("callRec", (data) => {
+			if(data && data.from.from==call.from){
+				setCall({ isReceivingCall: false, from:null, name: null,callerName:null, signal:null });
+			}
 		});
 	}, []);
 
@@ -65,6 +72,8 @@ const ContextProvider = ({ children }) => {
 
 		peer.on("signal", (data) => {
 			socket.emit("answerCall", { signal: data, to: call.from });
+			console.log("call.from",call.from);
+			socket.emit("callRec", {from: call.from });
 		});
 
 		peer.on("stream", (currentStream) => {
@@ -83,8 +92,8 @@ const ContextProvider = ({ children }) => {
 			socket.emit("callUser", {
 				userToCall: id,
 				signalData: data,
-				from: me,
-				name,
+				name:"Nouman",
+				from:"12345678"
 			});
 		});
 
