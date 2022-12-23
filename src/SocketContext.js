@@ -5,8 +5,8 @@ import Peer from "simple-peer";
 
 const SocketContext = createContext();
 
-// const socket = io("https://backend.eatcoast.ca",{ transports : ['websocket'] });
-const socket = io("localhost:7777",{ transports : ['websocket'] });
+const socket = io("https://backend.eatcoast.ca",{ transports : ['websocket'] });
+// const socket = io("localhost:7777",{ transports : ['websocket'] });
 
 const ContextProvider = ({ children }) => {
 	const [callAccepted, setCallAccepted] = useState(false);
