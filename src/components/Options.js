@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext} from "react";
 import {
 	Button,
 	TextField,
@@ -8,8 +8,7 @@ import {
 	Paper,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { Assignment, Phone, PhoneDisabled } from "@material-ui/icons";
+import { Phone, PhoneDisabled } from "@material-ui/icons";
 import { SocketContext } from "../SocketContext";
 import { useSpeechSynthesis } from "react-speech-kit";
 
@@ -55,7 +54,6 @@ let orgName = [
 const Options = ({ children }) => {
 	const {callAccepted, leaveCall, callUser, callEnded } =
 		useContext(SocketContext);
-	const [idToCall, setIdToCall] = useState("");
 	const classes = useStyles();
 	const { speak, voices ,cancel } = useSpeechSynthesis();
 	return (
