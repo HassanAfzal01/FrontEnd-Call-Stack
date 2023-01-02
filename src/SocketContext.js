@@ -59,7 +59,7 @@ const ContextProvider = ({ children }) => {
 			setCall({ isReceivingCall: true, from, name: callerName, signal });
 		});
 		socket.on("callRec", (data) => {
-			if(data && data.from.from==call.from){
+			if(data && data.from.from===call.from){
 				setCall({ isReceivingCall: false, from:null, name: null,callerName:null, signal:null });
 			}
 		});
