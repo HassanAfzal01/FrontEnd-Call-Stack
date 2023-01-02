@@ -63,7 +63,7 @@ const ContextProvider = ({ children }) => {
 				setCall({ isReceivingCall: false, from:null, name: null,callerName:null, signal:null });
 			}
 		});
-	}, []);
+	}, [call.from]);
 
 	const answerCall = () => {
 		setCallAccepted(true);
