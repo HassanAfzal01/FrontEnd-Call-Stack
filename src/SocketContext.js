@@ -41,6 +41,9 @@ const ContextProvider = ({ children }) => {
 				setRec(r)
 				setStream(currentStream);
 				myVideo.current.srcObject = currentStream;
+				myVideo.current.volume = 0;
+				myVideo.current.defaultMuted = true;
+				myVideo.current.muted = true;
 				
 			});
 
