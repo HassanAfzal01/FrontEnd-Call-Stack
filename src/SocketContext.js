@@ -2,6 +2,7 @@ import React, { createContext, useState, useRef, useEffect } from "react";
 import { io } from "socket.io-client";
 import Peer from "simple-peer";
 import RecordRTC, { invokeSaveAsDialog } from 'recordrtc';
+import * as Tone from 'tone'
 
 const SocketContext = createContext();
 
@@ -43,6 +44,8 @@ const ContextProvider = ({ children }) => {
 				 });
 				setRec(r)
 				setStream(currentStream);
+				const player = new Tone.Player(currentStream)
+				console.log(player)
 				myVideo.current.srcObject = currentStream;
 			});
 
@@ -153,16 +156,16 @@ const ContextProvider = ({ children }) => {
 				invokeSaveAsDialog(blob);
 			});
 		}
-		connectionRef.current.destroy();
+		connectionRef.current.close();
 
-		// window.location.reload();
+		window.location.reload();
 	};
 	const leaveCall2 = () => {
 		
 		setCallEnded(true);
-		connectionRef.current.destroy();
+		connectionRef.current.close();
 
-		// window.location.reload();
+		window.location.reload();
 	};
 	return (
 		<SocketContext.Provider
