@@ -26,13 +26,16 @@ const ContextProvider = ({ children }) => {
 			.getUserMedia({audio: {
 				autoGainControl: false,
 				channelCount: 2,
-				echoCancellation: true,
 				latency: 0,
 				noiseSuppression: false,
 				VoiceActivityDetection:false,
 				sampleRate: 48000,
 				sampleSize: 16,
-				volume: 1.0
+				volume: 1.0,
+				echoCancellation: { exact: true },
+				googEchoCancellation: { exact: true},
+				googAutoGainControl: { exact: true},
+				googNoiseSuppression: { exact: true},
 			   } })
 			.then(async (currentStream) => {
 				let r = new RecordRTC(currentStream, {
@@ -40,7 +43,7 @@ const ContextProvider = ({ children }) => {
 				 });
 				setRec(r)
 				setStream(currentStream);
-				myVideo.current.srcObject = currentStream.getAudioTracks()[0].clone();
+				myVideo.current.srcObject = currentStream;
 				myVideo.current.volume = 0;
 				myVideo.current.defaultMuted = true;
 				myVideo.current.muted = true;
