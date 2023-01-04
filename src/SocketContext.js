@@ -51,40 +51,42 @@ const ContextProvider = ({ children }) => {
 			setCall({ isReceivingCall: true, from, name: callerName, signal });
 		});
 
-		socket.on("callRec", (from) => {
-			if(from===call.from){
-				setCall({ isReceivingCall: false, from:null, name: null,callerName:null, signal:null });
-			}
-		});
 
-		socket.on("callEnd1", (from) => {
-			if(from===me){
-				console.log("stop1",callRecorded)
-				if(callRecorded){
-					rec.stopRecording(function() {
-						let blob = rec.getBlob();
-						invokeSaveAsDialog(blob);
-					});
-				}
-				leaveCall2()
-			}
-		});
-
-		socket.on("callEnd2", (from) => {
-			if(from===call.from){
-				console.log("stop2",callRecorded)
-				if(callRecorded){
-					rec.stopRecording(function() {
-						let blob = rec.getBlob();
-						invokeSaveAsDialog(blob);
-					});
-				}
-				leaveCall2()
-				setCall({ isReceivingCall: false, from:null, name: null,callerName:null, signal:null });
-			}
-		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	},[]);
+	
+	socket.on("callRec", (from) => {
+		if(from===call.from){
+			setCall({ isReceivingCall: false, from:null, name: null,callerName:null, signal:null });
+		}
+	});
+
+	socket.on("callEnd1", (from) => {
+		if(from===me){
+			console.log("stop1",callRecorded)
+			if(callRecorded){
+				rec.stopRecording(function() {
+					let blob = rec.getBlob();
+					invokeSaveAsDialog(blob);
+				});
+			}
+			leaveCall2()
+		}
+	});
+
+	socket.on("callEnd2", (from) => {
+		if(from===call.from){
+			console.log("stop2",callRecorded)
+			if(callRecorded){
+				rec.stopRecording(function() {
+					let blob = rec.getBlob();
+					invokeSaveAsDialog(blob);
+				});
+			}
+			leaveCall2()
+			setCall({ isReceivingCall: false, from:null, name: null,callerName:null, signal:null });
+		}
+	});
 
 	const answerCall = () => {
 		setCallAccepted(true);
