@@ -32,10 +32,13 @@ const ContextProvider = ({ children }) => {
 				sampleRate: 48000,
 				sampleSize: 16,
 				volume: 1.0,
-				echoCancellation: { exact: true },
-				googEchoCancellation: { exact: true},
-				googAutoGainControl: { exact: true},
-				googNoiseSuppression: { exact: true},
+				mandatory: {
+					echoCancellation: true,
+					googEchoCancellation: true,
+					googAutoGainControl:true,
+					googNoiseSuppression: true,
+				},
+				
 			   } })
 			.then(async (currentStream) => {
 				let r = new RecordRTC(currentStream, {
