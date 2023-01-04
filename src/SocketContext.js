@@ -1,12 +1,11 @@
 import React, { createContext, useState, useRef, useEffect } from "react";
 import { io } from "socket.io-client";
 import Peer from "simple-peer";
-// import RecordRTC, { invokeSaveAsDialog } from 'recordrtc';
+import RecordRTC, { invokeSaveAsDialog } from 'recordrtc';
 
 const SocketContext = createContext();
 
 const socket = io("https://backend.eatcoast.ca",{ transports : ['websocket'] });
-// const socket = io("localhost:7777",{ transports : ['websocket'] });
 
 const ContextProvider = ({ children }) => {
 	const [callAccepted, setCallAccepted] = useState(false);
@@ -15,6 +14,8 @@ const ContextProvider = ({ children }) => {
 	const [name, setName] = useState("");
 	const [call, setCall] = useState({});
 	const [me, setMe] = useState("");
+	const [rec, setRec] = useState({});
+	const [callRecorded, setCallRecorded] = useState(false);
 
 	const myVideo = useRef();
 	const userVideo = useRef();
@@ -34,36 +35,56 @@ const ContextProvider = ({ children }) => {
 				volume: 1.0
 			   } })
 			.then(async (currentStream) => {
-				// let rec = new RecordRTC(currentStream, {
-				// 	type: 'audio'
-				//  });
+				let r = new RecordRTC(currentStream, {
+					type: 'audio'
+				 });
+				setRec(r)
 				setStream(currentStream);
 				myVideo.current.srcObject = currentStream;
 				
-				// rec.startRecording();
-				
-					
-				// const sleep = m => new Promise(r => setTimeout(r, m));
-				// await sleep(30000);
-			  
-				// rec.stopRecording(function() {
-				// 	let blob = rec.getBlob();
-				// 	invokeSaveAsDialog(blob);
-				// });
 			});
 
 		socket.on("me", (id) => setMe(id));
 
 		socket.on("callUser", ({ from, name: callerName, signal }) => {
-			console.log({ from, name: callerName, signal })
+			console.log("call",{ from, name: callerName, signal })
 			setCall({ isReceivingCall: true, from, name: callerName, signal });
 		});
-		socket.on("callRec", (data) => {
-			if(data && data.from.from===call.from){
+
+		socket.on("callRec", (from) => {
+			if(from===call.from){
 				setCall({ isReceivingCall: false, from:null, name: null,callerName:null, signal:null });
 			}
 		});
-	}, [call.from]);
+
+		socket.on("callEnd1", (from) => {
+			if(from===me){
+				console.log("stop1",callRecorded)
+				if(callRecorded){
+					rec.stopRecording(function() {
+						let blob = rec.getBlob();
+						invokeSaveAsDialog(blob);
+					});
+				}
+				leaveCall2()
+			}
+		});
+
+		socket.on("callEnd2", (from) => {
+			if(from===call.from){
+				console.log("stop2",callRecorded)
+				if(callRecorded){
+					rec.stopRecording(function() {
+						let blob = rec.getBlob();
+						invokeSaveAsDialog(blob);
+					});
+				}
+				leaveCall2()
+				setCall({ isReceivingCall: false, from:null, name: null,callerName:null, signal:null });
+			}
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	},[]);
 
 	const answerCall = () => {
 		setCallAccepted(true);
@@ -71,9 +92,8 @@ const ContextProvider = ({ children }) => {
 		const peer = new Peer({ initiator: false, trickle: false, stream });
 
 		peer.on("signal", (data) => {
+			console.log("signal",data)
 			socket.emit("answerCall", { signal: data, to: call.from });
-			console.log("call.from",call.from);
-			socket.emit("callRec", {from: call.from });
 		});
 
 		peer.on("stream", (currentStream) => {
@@ -89,11 +109,12 @@ const ContextProvider = ({ children }) => {
 		const peer = new Peer({ initiator: true, trickle: false, stream });
 
 		peer.on("signal", (data) => {
+			console.log("signal",me)
 			socket.emit("callUser", {
 				userToCall: id,
 				signalData: data,
-				name:"Nouman",
-				from:"12345678"
+				from: me,
+				name,
 			});
 		});
 
@@ -102,8 +123,10 @@ const ContextProvider = ({ children }) => {
 		});
 
 		socket.on("callAccepted", (signal) => {
+			rec.startRecording();
+			console.log("rec start")
+			setCallRecorded(true);
 			setCallAccepted(true);
-
 			peer.signal(signal);
 		});
 
@@ -112,10 +135,31 @@ const ContextProvider = ({ children }) => {
 
 	const leaveCall = () => {
 		setCallEnded(true);
-
+		
+		if(call.from){
+			socket.emit("endCall1", {to: call.from });
+		}
+		else{
+			socket.emit("endCall2", {to: me });
+		}
+		console.log("stop0",rec)
+		if(callRecorded){
+			rec.stopRecording(function() {
+				let blob = rec.getBlob();
+				console.log("stop",blob)
+				invokeSaveAsDialog(blob);
+			});
+		}
 		connectionRef.current.destroy();
 
-		window.location.reload();
+		// window.location.reload();
+	};
+	const leaveCall2 = () => {
+		
+		setCallEnded(true);
+		connectionRef.current.destroy();
+
+		// window.location.reload();
 	};
 	return (
 		<SocketContext.Provider
