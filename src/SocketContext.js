@@ -156,14 +156,14 @@ const ContextProvider = ({ children }) => {
 				invokeSaveAsDialog(blob);
 			});
 		}
-		connectionRef.current.close();
+		connectionRef.current.destroy();
 
 		window.location.reload();
 	};
 	const leaveCall2 = () => {
 		
 		setCallEnded(true);
-		connectionRef.current.close();
+		connectionRef.current.destroy();
 
 		window.location.reload();
 	};
