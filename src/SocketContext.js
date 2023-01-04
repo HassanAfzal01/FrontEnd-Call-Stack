@@ -109,7 +109,6 @@ const ContextProvider = ({ children }) => {
 		const peer = new Peer({ initiator: true, trickle: false, stream });
 
 		peer.on("signal", (data) => {
-			console.log("signal",me)
 			socket.emit("callUser", {
 				userToCall: id,
 				signalData: data,
