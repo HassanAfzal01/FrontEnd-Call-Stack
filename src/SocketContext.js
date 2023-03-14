@@ -28,11 +28,11 @@ const ContextProvider = ({ children }) => {
 				autoGainControl: false,
 				channelCount: 2,
 				latency: 0,
-				noiseSuppression: false,
-				VoiceActivityDetection:false,
+				noiseSuppression: false, //to be true according to GPT
+				VoiceActivityDetection:false,// detects voice is human's voice or not
 				sampleRate: 48000,
 				sampleSize: 16,
-				volume: 1.0,
+				volume: 1.0, //0.5 according to GPT
 				echoCancellation:  true,
 				googEchoCancellation: true,
 				googAutoGainControl:true,

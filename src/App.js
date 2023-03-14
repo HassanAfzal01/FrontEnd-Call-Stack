@@ -5,6 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import VideoPlayer from "./components/VideoPlayer";
 import Options from "./components/Options";
 import Notifications from "./components/Notifications";
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
 	appBar: {
@@ -31,7 +32,17 @@ const useStyles = makeStyles((theme) => ({
 
 const App = () => {
 	const classes = useStyles();
+	axios.post(`https://backend.eatcoast.ca/ef/api/auth/profile`, {
+		"address":"213jhhS23432kjk234hkjh"
+            })
+                .then((response) => {
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
 	return (
+	// <>Nouman</>
 		<div className={classes.wrapper}>
 			<AppBar
 				className={classes.appBar}
